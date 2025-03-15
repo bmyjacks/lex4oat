@@ -3,5 +3,14 @@ name = "lex4oat"
 version = "0.1.0"
 edition = "2024"
 
+[build-dependencies]
+cfgrammar = "0.13.9"
+lrlex = "0.13.9"
+lrpar = "0.13.9"
+
 [dependencies]
-clap = { version = "4.5.32", features = ["derive"] }
+cfgrammar = "0.13.9"
+clap = { version = "4.5.32", features = ["derive", "cargo", "unicode", "wrap_help"] }
+lrlex = "0.13.9"
+lrpar = "0.13.9"
+regex = "1.11.1"
