@@ -101,7 +101,7 @@ impl Node {
 
     // Revised to_dot function that uses a visited set to prevent infinite loops.
     pub fn to_dot(&self, nodes: &HashMap<usize, Node>) -> String {
-        let mut dot_string = String::from("digraph NFA {\n");
+        let mut dot_string = String::from("digraph FA {\n");
         let mut visited = HashSet::new();
         self.write_dot(&mut dot_string, nodes, &mut visited);
         dot_string.push_str("}\n");

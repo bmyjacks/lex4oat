@@ -1,12 +1,10 @@
-#![allow(unused_imports)]
-#![allow(dead_code)]
-#![allow(unused_variables)]
-
+mod dfa;
 mod lex4oat;
 mod liblex4oat;
 mod nfa;
 mod node;
 
+use crate::liblex4oat::LibLex4Oat;
 use clap::arg;
 use clap::Parser;
 use std::path::PathBuf;
@@ -35,12 +33,12 @@ fn main() {
     // Library lexer
     // let mut lib_lexer = LibLex4Oat::new(input.to_owned());
     // lib_lexer.lex();
-
+    // 
     // let tokens = lib_lexer.tokens();
     // for (name, span) in tokens {
     //     println!("{:<10} {}", name, span);
     // }
-    println!();
+    // println!();
     // End of library lexer
 
     // Handmade lexer

@@ -9,6 +9,12 @@ pub struct Nfa {
 }
 
 impl Nfa {
+    pub fn get_nodes(&self) -> &HashMap<usize, Node> {
+        &self.nodes
+    }
+    pub fn get_root_id(&self) -> usize {
+        self.root_id
+    }
     pub fn new() -> Nfa {
         let root = Node::new("NFA".to_string(), false);
         let root_id = root.get_id();
@@ -86,27 +92,27 @@ impl Nfa {
             }
         }
 
+        let mut edge_name = String::new();
+
         if is_negated {
             // For negated sets, add transitions for all ASCII characters not in set_chars.
-            for code in 33u8..=126u8 {
+            for code in 32u8..=126u8 {
                 let ch = code as char;
                 if !set_chars.contains(&ch) {
-                    self.nodes
-                        .get_mut(&start_node_id)
-                        .unwrap()
-                        .add_outgoing_edge(new_node_id, ch.to_string());
+                    edge_name.push(ch);
                 }
             }
         } else {
             // For normal sets, add transitions for each character in the set.
             for ch in set_chars {
-                self.nodes
-                    .get_mut(&start_node_id)
-                    .unwrap()
-                    .add_outgoing_edge(new_node_id, ch.to_string());
+                edge_name.push(ch);
             }
         }
 
+        self.nodes
+            .get_mut(&start_node_id)
+            .unwrap()
+            .add_outgoing_edge(new_node_id, edge_name);
         self.nodes.insert(new_node_id, new_node);
         new_node_id
     }
@@ -267,7 +273,7 @@ impl Nfa {
                 self.nodes
                     .get_mut(&repeat_node_id)
                     .unwrap()
-                    .add_outgoing_edge(prev_node_id, "<λ>".to_string());
+                    .add_outgoing_edge(prev_node_id, "<λ>123".to_string());
                 if chars.peek().is_none() && mark_ending {
                     self.nodes
                         .get_mut(&repeat_node_id)
@@ -334,7 +340,7 @@ impl Nfa {
         let keywords = self.keywords.clone();
 
         for (keyword, name) in &keywords {
-            println!("{:<10} {}", name, keyword);
+            // println!("{:<10} {}", name, keyword);
             let _ = self.parse_regex(keyword, name, self.root_id, true);
         }
 
