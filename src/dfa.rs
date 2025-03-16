@@ -48,9 +48,9 @@ impl Dfa {
 
             // Gather all avail trans symbols from the current set.
             let symbols = self.extract_symbols(&current_set, self.nfa.borrow().get_nodes());
-            for sym in symbols {
+            for ch in symbols {
                 // Gather all states reached on sym and then epsilon
-                let move_set = self.move_nfa(&current_set, &sym);
+                let move_set = self.move_nfa(&current_set, &ch);
                 let closure = self.epsilon_closure(&move_set);
                 if closure.is_empty() {
                     continue;
@@ -66,11 +66,16 @@ impl Dfa {
                     new_id
                 };
 
-                // Add a DFA trans from the current state to the next one.
-                self.nodes
-                    .get_mut(&current_dfa_id)
-                    .unwrap()
-                    .add_outgoing_edge(next_dfa_id, sym);
+                let current_dfa_node = self.nodes.get_mut(&current_dfa_id).unwrap();
+                if let Some(edge) = current_dfa_node
+                    .get_mut_outgoing_edges()
+                    .iter_mut()
+                    .find(|edge| edge.get_to() == next_dfa_id)
+                {
+                    edge.push(ch);
+                } else {
+                    current_dfa_node.add_outgoing_edge(next_dfa_id, ch.to_string());
+                }
             }
         }
 
@@ -87,7 +92,7 @@ impl Dfa {
             if let Some(nfa_node) = self.nfa.borrow().get_nodes().get(&state_id) {
                 for edge in nfa_node.get_outgoing_edges().iter() {
                     let to = edge.get_to();
-                    let name = edge.get_name().to_string();
+                    let name = edge.get_sym().to_string();
                     if name == "<λ>" && !closure.contains(&to) {
                         closure.insert(to);
                         stack.push(to);
@@ -99,16 +104,18 @@ impl Dfa {
         closure
     }
 
-    // Move from each state in state_set using the provided symbol, which is now a string slice.
-    fn move_nfa(&mut self, state_set: &BTreeSet<usize>, symbol: &str) -> BTreeSet<usize> {
+    // Move from each state in state_set using the provided char, which is now a string slice.
+    fn move_nfa(&mut self, state_set: &BTreeSet<usize>, ch: &char) -> BTreeSet<usize> {
         let mut result = BTreeSet::new();
         for state_id in state_set {
             if let Some(nfa_node) = self.nfa.borrow().get_nodes().get(state_id) {
                 for edge in nfa_node.get_outgoing_edges().iter() {
-                    let name = edge.get_name();
-                    // Check if the edge's label contains the given symbol.
-                    if name.contains(symbol) && !result.contains(&edge.get_to()) {
-                        result.insert(edge.get_to());
+                    let to = edge.get_to();
+                    let sym = edge.get_sym();
+
+                    // Check if arrive to using ch
+                    if sym.contains(*ch) && !result.contains(&edge.get_to()) {
+                        result.insert(to);
                     }
                 }
             }
@@ -121,14 +128,16 @@ impl Dfa {
         &self,
         state_set: &BTreeSet<usize>,
         _nodes: &HashMap<usize, Node>,
-    ) -> BTreeSet<String> {
+    ) -> BTreeSet<char> {
         let mut result = BTreeSet::new();
         for state_id in state_set {
             if let Some(nfa_node) = self.nfa.borrow().get_nodes().get(state_id) {
                 for edge in nfa_node.get_outgoing_edges().iter() {
-                    let sym = edge.get_name().to_string();
+                    let sym = edge.get_sym().to_string();
                     if sym != "<λ>" {
-                        result.insert(sym);
+                        for ch in sym.chars() {
+                            result.insert(ch);
+                        }
                     }
                 }
             }
@@ -174,7 +183,7 @@ impl Dfa {
     }
 
     // Updated lex method that works with string symbols.
-    pub fn lex(&mut self, input: &str) -> Vec<String> {
+    pub fn lex(&mut self, input: &str) -> Vec<(String, String)> {
         let mut tokens = Vec::new();
         let chars: Vec<char> = input.chars().collect();
         let mut index = 0;
@@ -191,7 +200,7 @@ impl Dfa {
 
                 for edge in current_node.get_outgoing_edges().iter() {
                     // Compare using contains. The edge's string label may consist of multiple characters.
-                    if edge.get_name().contains(&chars[j].to_string()) {
+                    if edge.get_sym().contains(&chars[j].to_string()) {
                         found = true;
                         current_state_id = edge.get_to();
                         break;
@@ -216,15 +225,16 @@ impl Dfa {
 
             if let Some(end_index) = last_accept_index {
                 let token: String = chars[index..end_index].iter().collect();
-                let token = token.trim();
+                let token = token.trim().to_string();
                 if last_accept_state_name != ";" {
-                    tokens.push(format!("{:<30} {}", last_accept_state_name, token));
+                    tokens.push((last_accept_state_name, token));
                 }
                 index = end_index;
             } else {
                 index += 1;
             }
         }
+
         tokens
     }
 }

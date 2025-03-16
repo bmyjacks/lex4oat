@@ -273,7 +273,7 @@ impl Nfa {
                 self.nodes
                     .get_mut(&repeat_node_id)
                     .unwrap()
-                    .add_outgoing_edge(prev_node_id, "<λ>123".to_string());
+                    .add_outgoing_edge(prev_node_id, "<λ>".to_string());
                 if chars.peek().is_none() && mark_ending {
                     self.nodes
                         .get_mut(&repeat_node_id)
@@ -340,7 +340,10 @@ impl Nfa {
         let keywords = self.keywords.clone();
 
         for (keyword, name) in &keywords {
-            // println!("{:<10} {}", name, keyword);
+            if name == ";" {
+                continue;
+            }
+
             let _ = self.parse_regex(keyword, name, self.root_id, true);
         }
 

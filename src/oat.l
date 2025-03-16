@@ -1,4 +1,3 @@
-
 %%
 global "GLOBAL"
 var "VAR"
@@ -44,5 +43,4 @@ string "STRING"
 \~ "NOT"
 \! "BANG"
 \/\*([^*]|\*+[^*/])*\*+\/ "COMMENT"
-[ \t\r\n]+ ;
-
+\s+ ;

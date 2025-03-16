@@ -1,6 +1,6 @@
 [package]
 name = "lex4oat"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
 
 [build-dependencies]
@@ -11,6 +11,8 @@ lrpar = "0.13.9"
 [dependencies]
 cfgrammar = "0.13.9"
 clap = { version = "4.5.32", features = ["derive", "cargo", "unicode", "wrap_help"] }
+colored = "3.0.0"
+env_logger = "0.11.7"
+log = "0.4.26"
 lrlex = "0.13.9"
 lrpar = "0.13.9"
-regex = "1.11.1"

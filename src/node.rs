@@ -8,43 +8,29 @@ pub fn increment_global_counter() -> usize {
     GLOBAL_COUNTER.fetch_add(1, Ordering::SeqCst) + 1
 }
 
-pub fn get_global_counter() -> usize {
-    GLOBAL_COUNTER.load(Ordering::SeqCst)
-}
-
-pub fn reset_global_counter() {
-    GLOBAL_COUNTER.store(0, Ordering::SeqCst);
-}
-
 #[derive(Clone)]
 pub struct Edge {
-    // The ID of the node where the edge starts
-    from: usize,
     // The ID of the node where the edge ends
     to: usize,
     // The name of the edge
-    name: String,
+    path: String,
 }
 
 impl Edge {
-    pub fn new(from: usize, to: usize, name: String) -> Edge {
-        Edge { from, to, name }
-    }
-
-    pub fn get_from(&self) -> usize {
-        self.from
+    pub fn new(to: usize, name: String) -> Edge {
+        Edge { to, path: name }
     }
 
     pub fn get_to(&self) -> usize {
         self.to
     }
 
-    pub fn get_name(&self) -> &str {
-        &self.name
+    pub fn get_sym(&self) -> &str {
+        &self.path
     }
 
-    pub fn set_name(&mut self, name: String) {
-        self.name = name;
+    pub fn push(&mut self, ch: char) {
+        self.path.push(ch);
     }
 }
 
@@ -96,7 +82,7 @@ impl Node {
     }
 
     pub fn add_outgoing_edge(&mut self, to: usize, name: String) {
-        self.outgoing_edges.push(Edge::new(self.id, to, name));
+        self.outgoing_edges.push(Edge::new(to, name));
     }
 
     // Revised to_dot function that uses a visited set to prevent infinite loops.
@@ -122,7 +108,7 @@ impl Node {
         for edge in &self.outgoing_edges {
             let to = nodes.get(&edge.to).unwrap();
             let escaped_label = edge
-                .name
+                .path
                 .replace("\\", "\\\\")
                 .replace("\"", "\\\"")
                 .replace("\t", "\\\\t")

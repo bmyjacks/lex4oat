@@ -6,7 +6,6 @@ use std::rc::Rc;
 
 pub struct Lex4Oat {
     input: String,
-    tokens: Vec<(String, String)>,
     nfa: Rc<RefCell<Nfa>>,
     dfa: Rc<RefCell<Dfa>>,
 }
@@ -15,12 +14,7 @@ impl Lex4Oat {
     pub fn new(input: String) -> Lex4Oat {
         let nfa = Rc::new(RefCell::new(Nfa::new()));
         let dfa = Rc::new(RefCell::new(Dfa::new()));
-        Lex4Oat {
-            input,
-            tokens: Vec::new(),
-            nfa,
-            dfa,
-        }
+        Lex4Oat { input, nfa, dfa }
     }
 
     pub fn construct_nfa(&mut self) {
@@ -36,11 +30,7 @@ impl Lex4Oat {
     }
 
     pub fn minimize_dfa(&mut self) {}
-    pub fn lex(&mut self) {
-        let tokens = self.dfa.borrow_mut().lex(&self.input);
-
-        for token in tokens {
-            println!("{}", token);
-        }
+    pub fn lex(&mut self) -> Vec<(String, String)> {
+        self.dfa.borrow_mut().lex(&self.input)
     }
 }
