@@ -4,15 +4,15 @@ version = "1.0.0"
 edition = "2024"
 
 [build-dependencies]
-cfgrammar = "0.13.9"
-lrlex = "0.13.9"
-lrpar = "0.13.9"
+cfgrammar = "0.13.10"
+lrlex = "0.13.10"
+lrpar = "0.13.10"
 
 [dependencies]
-cfgrammar = "0.13.9"
+cfgrammar = "0.13.10"
 clap = { version = "4.5.32", features = ["derive", "cargo", "unicode", "wrap_help"] }
 colored = "3.0.0"
 env_logger = "0.11.7"
 log = "0.4.26"
-lrlex = "0.13.9"
-lrpar = "0.13.9"
+lrlex = "0.13.10"
+lrpar = "0.13.10"

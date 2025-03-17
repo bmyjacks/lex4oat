@@ -16,16 +16,23 @@ lex4oat is a Rust-based lexer for the Oat programming language. It features two 
 
 ### Build
 
-```sh
+```shell
 cargo build
 ```
 
 ### Run
 
-```sh
+```shell
 cargo run -- -f a.oat
+```
+
+### Docker
+```shell
+docker buildx build . -t lex4oat:1
+
+docker run -it --rm lex4oat:1 test/[].oat
 ```
 
 ### Testing & CI
 
-The project includes a GitHub Actions workflow (.github/workflows/rust.yml) that builds and tests the project.
+The project includes a GitHub Actions workflow that builds and tests the project.
